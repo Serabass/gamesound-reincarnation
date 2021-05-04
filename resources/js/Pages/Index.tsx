@@ -5,14 +5,12 @@ import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
 import {ColumnsType} from 'antd/lib/table/interface';
 import {AjaxInput} from '../components/AjaxInput';
-import {PauseOutlined, PlayCircleFilled} from '@ant-design/icons';
-import {Simulate} from 'react-dom/test-utils';
-import play = Simulate.play;
+import {PauseOutlined, CaretRightOutlined} from '@ant-design/icons';
 
 function PlayBtn({gameId = 1, fileName}: any) {
   // http://gamesound.serabass.net/sounds/1/180.wav
   let [playing, setPlaying] = useState(false);
-  let icon = !playing ? <PlayCircleFilled /> : <PauseOutlined />;
+  let icon = !playing ? <CaretRightOutlined /> : <PauseOutlined />;
   return <Button icon={icon}
                  type="text"
                  onClick={() => {
