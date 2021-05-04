@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 
 export interface AjaxInputProps extends InputProps {
-
+  data: any;
 }
 
 export function AjaxInput({...props}: AjaxInputProps) {

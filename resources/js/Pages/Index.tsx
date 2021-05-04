@@ -7,7 +7,7 @@ import {ColumnsType} from 'antd/lib/table/interface';
 import {AjaxInput} from '../components/AjaxInput';
 
 interface SoundEntry {
-
+  id: number;
 }
 
 let columns: ColumnsType<SoundEntry> = [
@@ -20,8 +20,10 @@ let columns: ColumnsType<SoundEntry> = [
     title: "Original Text",
     key: 'originalText',
     dataIndex: 'originalText',
-    render(value) {
-      return <AjaxInput defaultValue={value} bordered={false} />
+    render(value, entry) {
+      return <AjaxInput defaultValue={value} bordered={false} data={{
+        id: entry.id
+      }} />
     }
   },
   {
