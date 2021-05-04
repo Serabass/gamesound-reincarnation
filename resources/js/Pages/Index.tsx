@@ -37,8 +37,17 @@ let columns = [
   },
 ];
 
+interface SoundEntry {
+
+}
+
+interface SoundsResponse {
+  total: number;
+  data: SoundEntry[];
+}
+
 interface IndexProps {
-  sounds: any;
+  sounds: SoundsResponse;
   page: number;
   pageSize: number;
   query?: string;
@@ -47,7 +56,15 @@ interface IndexProps {
   groupName?: string;
 }
 
-export default function Index({sounds, page = 1, pageSize, query = '', onlyEmpty = 0, groupNames, groupName = ''}: IndexProps) {
+export default function Index({
+                                sounds,
+                                page = 1,
+                                pageSize,
+                                query = '',
+                                onlyEmpty = 0,
+                                groupNames,
+                                groupName = ''
+                              }: IndexProps) {
   function search(data: any = {}) {
     Inertia.get((window as any).route('home'), {
       page,
@@ -73,7 +90,7 @@ export default function Index({sounds, page = 1, pageSize, query = '', onlyEmpty
                    }, 1000)}
             />
           </Col>
-          <Col md={10}>
+          <Col md={6}>
             <Select
               showSearch
               style={{width: '100%'}}
@@ -91,7 +108,7 @@ export default function Index({sounds, page = 1, pageSize, query = '', onlyEmpty
               {groupNames.map((name, index) => <Select.Option value={name} key={index}>{name}</Select.Option>)}
             </Select>,
           </Col>
-          <Col md={2}>
+          <Col md={6}>
             <Checkbox
               defaultChecked={onlyEmpty == 1}
               onChange={debounce((e) => {
@@ -108,17 +125,20 @@ export default function Index({sounds, page = 1, pageSize, query = '', onlyEmpty
 
         <Row>
           <Col md={24}>
-            <Table dataSource={sounds.data} columns={columns} pagination={{
-              position: ['topCenter', 'bottomCenter'],
-              pageSize,
-              total: sounds.total,
-              current: page,
-              onChange(page) {
-                search({
-                  page
-                });
-              }
-            }} />
+            Total: <b>{sounds.total}</b>
+            <Table dataSource={sounds.data}
+                   columns={columns}
+                   pagination={{
+                     position: ['topCenter', 'bottomCenter'],
+                     pageSize,
+                     total: sounds.total,
+                     current: page,
+                     onChange(page) {
+                       search({
+                         page
+                       });
+                     }
+                   }} />
           </Col>
         </Row>
       </Col>
