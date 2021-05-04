@@ -18,7 +18,7 @@ export default function AppLayout({title, children}: AppLayoutProps) {
 
     return (
         <Layout>
-            <Header className="header">
+            <Header className="header" hidden>
                 <div className="logo" />
                 <Menu theme="dark" mode="horizontal">
                     <Menu.Item key="1">
@@ -33,7 +33,7 @@ export default function AppLayout({title, children}: AppLayoutProps) {
                 </Menu>
             </Header>
             <Content style={{padding: '0 50px'}}>
-                <Breadcrumb style={{margin: '16px 0'}}>
+                <Breadcrumb style={{margin: '16px 0', display: 'none'}}>
                     <Breadcrumb.Item>Home</Breadcrumb.Item>
                     <Breadcrumb.Item>List</Breadcrumb.Item>
                     <Breadcrumb.Item>App</Breadcrumb.Item>

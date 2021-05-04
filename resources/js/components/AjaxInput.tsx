@@ -25,7 +25,7 @@ export function AjaxInput<D>({...props}: AjaxInputProps<D>) {
 
   return <Input {...props}
                 defaultValue={defaultValue}
-                prefix={saving ? <LoadingOutlined /> : <CheckOutlined />}
+                prefix={saving ? <LoadingOutlined /> : <CheckOutlined style={{ opacity: 0 }} />}
                 onChange={(e) => {
                   setDefaultValue(e.target.value);
                   setChanged(true);

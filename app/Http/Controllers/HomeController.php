@@ -16,6 +16,7 @@ class HomeController extends Controller {
       ->where('originalText', 'LIKE', '%' . $query . '%');
 
     $groupNames = Sound::select('groupName')->groupBy('groupName')->pluck('groupName');
+    $langs = Sound::select('lang')->groupBy('lang')->pluck('lang');
 
     if ($onlyEmpty) {
       $sounds = $sounds->where('originalText', '=', '');
@@ -28,6 +29,7 @@ class HomeController extends Controller {
       'onlyEmpty'  => $onlyEmpty,
       'pageSize'   => $pageSize,
       'groupNames' => $groupNames,
+      'langs'      => $langs,
     ]);
   }
 }

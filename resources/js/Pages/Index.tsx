@@ -23,7 +23,7 @@ let columns: ColumnsType<SoundEntry> = [
     render(value, entry) {
       return <AjaxInput<{ id: number }>
         defaultValue={value}
-        bordered={false} data={{
+        data={{
           id: entry.id
         }}
       />
