@@ -8,15 +8,26 @@ use Inertia\Inertia;
 
 class HomeController extends Controller {
   public function index(Request $request) {
+    $pageSize = 100;
     $page = $request->input('page');
     $query = $request->input('query', '');
+    $onlyEmpty = $request->input('onlyEmpty', 0);
     $sounds = Sound::whereIsSpeech(true)
-      ->where('originalText', 'LIKE', '%' . $query . '%')
-      ->paginate(10);
+      ->where('originalText', 'LIKE', '%' . $query . '%');
+
+    $groupNames = Sound::select('groupName')->groupBy('groupName')->pluck('groupName');
+
+    if ($onlyEmpty) {
+      $sounds = $sounds->where('originalText', '=', '');
+    }
+
     return Inertia::render('Pages/Index', [
-      'sounds' => $sounds,
-      'page' => $page,
-      'query' => $query,
+      'sounds'     => $sounds->paginate($pageSize),
+      'page'       => $page,
+      'query'      => $query,
+      'onlyEmpty'  => $onlyEmpty,
+      'pageSize'   => $pageSize,
+      'groupNames' => $groupNames,
     ]);
   }
 }

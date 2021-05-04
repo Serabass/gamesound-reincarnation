@@ -1,5 +1,5 @@
-import React from 'react';
-import {Col, Input, Row, Table} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {Checkbox, Col, Divider, Input, Row, Table, Select} from 'antd';
 import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
@@ -40,35 +40,81 @@ let columns = [
 interface IndexProps {
   sounds: any;
   page: number;
+  pageSize: number;
   query?: string;
+  onlyEmpty: number;
+  groupNames: string[];
+  groupName?: string;
 }
 
-export default function Index({sounds, page, query = ''}: IndexProps) {
+export default function Index({sounds, page = 1, pageSize, query = '', onlyEmpty = 0, groupNames, groupName = ''}: IndexProps) {
+  function search(data: any = {}) {
+    Inertia.get((window as any).route('home'), {
+      page,
+      query,
+      onlyEmpty,
+      groupName,
+      ...data
+    });
+  }
+
   return <AppLayout title="Home page">
     <Row>
       <Col md={24}>
         <Row>
-          <Col md={24}>
-            <Input.Search defaultValue={query}
-                          onSearch={(query) => {
-                            Inertia.get((window as any).route('home'), {
-                              page: 1,
-                              query
-                            });
-                          }} />
+          <Col md={12}>
+            <Input autoFocus
+                   allowClear
+                   defaultValue={query}
+                   onChange={debounce((e) => {
+                     search({
+                       query: e.target.value,
+                     });
+                   }, 1000)}
+            />
+          </Col>
+          <Col md={10}>
+            <Select
+              showSearch
+              style={{width: '100%'}}
+              placeholder="Select a person"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                `${option?.value}`.toLowerCase().indexOf(`${input}`.toLowerCase()) >= 0
+              }
+              onChange={debounce((e) => {
+                search({
+                  groupName: e
+                });
+              }, 1000)}
+            >
+              {groupNames.map((name, index) => <Select.Option value={name} key={index}>{name}</Select.Option>)}
+            </Select>,
+          </Col>
+          <Col md={2}>
+            <Checkbox
+              defaultChecked={onlyEmpty == 1}
+              onChange={debounce((e) => {
+                search({
+                  onlyEmpty: +e.target.checked,
+                });
+              }, 200)}>
+              Show only empty entries
+            </Checkbox>
           </Col>
         </Row>
 
+        <Divider />
+
         <Row>
           <Col md={24}>
-
             <Table dataSource={sounds.data} columns={columns} pagination={{
-              position: ['topCenter'],
-              pageSize: 10,
+              position: ['topCenter', 'bottomCenter'],
+              pageSize,
               total: sounds.total,
               current: page,
               onChange(page) {
-                Inertia.get((window as any).route('home'), {
+                search({
                   page
                 });
               }
