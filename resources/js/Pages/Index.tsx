@@ -2,6 +2,7 @@ import React from 'react';
 import {Col, Input, Row, Table} from 'antd';
 import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
+import {debounce} from 'lodash';
 
 let columns = [
   {
@@ -39,15 +40,22 @@ let columns = [
 interface IndexProps {
   sounds: any;
   page: number;
+  query?: string;
 }
 
-export default function Index({sounds, page}: IndexProps) {
+export default function Index({sounds, page, query = ''}: IndexProps) {
   return <AppLayout title="Home page">
     <Row>
       <Col md={24}>
         <Row>
           <Col md={24}>
-            <Input.Search />
+            <Input.Search defaultValue={query}
+                          onSearch={(query) => {
+                            Inertia.get((window as any).route('home'), {
+                              page: 1,
+                              query
+                            });
+                          }} />
           </Col>
         </Row>
 
