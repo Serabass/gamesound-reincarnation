@@ -1,10 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Checkbox, Col, Divider, Input, Row, Table, Select} from 'antd';
 import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
+import {ColumnsType} from 'antd/lib/table/interface';
 
-let columns = [
+interface SoundEntry {
+
+}
+
+let columns: ColumnsType<SoundEntry> = [
   {
     title: "#",
     key: 'id',
@@ -36,10 +41,6 @@ let columns = [
     dataIndex: 'gender',
   },
 ];
-
-interface SoundEntry {
-
-}
 
 interface SoundsResponse {
   total: number;
@@ -126,19 +127,19 @@ export default function Index({
         <Row>
           <Col md={24}>
             Total: <b>{sounds.total}</b>
-            <Table dataSource={sounds.data}
-                   columns={columns}
-                   pagination={{
-                     position: ['topCenter', 'bottomCenter'],
-                     pageSize,
-                     total: sounds.total,
-                     current: page,
-                     onChange(page) {
-                       search({
-                         page
-                       });
-                     }
-                   }} />
+            <Table<SoundEntry> dataSource={sounds.data}
+                               columns={columns}
+                               pagination={{
+                                 position: ['topCenter', 'bottomCenter'],
+                                 pageSize,
+                                 total: sounds.total,
+                                 current: page,
+                                 onChange(page) {
+                                   search({
+                                     page
+                                   });
+                                 }
+                               }} />
           </Col>
         </Row>
       </Col>
