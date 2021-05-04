@@ -34,9 +34,7 @@ let columns: ColumnsType<SoundEntry> = [
     title: '',
     key: 'player',
     dataIndex: 'player',
-    render(_, el) {
-      return <PlayBtn gameId={1} fileName={el.fileName} />
-    }
+    render: (_, el) => <PlayBtn gameId={1} fileName={el.fileName} />
   },
   {
     title: "#",
@@ -103,7 +101,7 @@ export default function Index({
                                 groupName = ''
                               }: IndexProps) {
   function search(data: any = {}) {
-    Inertia.get((window as any).route('home'), {
+    Inertia.get(route('home'), {
       page,
       query,
       onlyEmpty,
@@ -169,7 +167,7 @@ export default function Index({
                                  position: ['topCenter', 'bottomCenter'],
                                  pageSize,
                                  total: sounds.total,
-                                 current: page,
+                                 defaultCurrent: page,
                                  onChange(page) {
                                    search({
                                      page
