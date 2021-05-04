@@ -5,8 +5,9 @@ import {
   CheckOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
+import {TextAreaProps} from 'antd/lib/input/TextArea';
 
-export interface AjaxInputProps<D> extends InputProps {
+export interface AjaxInputProps<D> extends TextAreaProps {
   data: D;
 }
 
@@ -23,9 +24,9 @@ export function AjaxInput<D>({...props}: AjaxInputProps<D>) {
     }, 2000);
   }
 
-  return <Input {...props}
+  return <Input.TextArea {...props}
                 defaultValue={defaultValue}
-                prefix={saving ? <LoadingOutlined /> : <CheckOutlined style={{ opacity: 0 }} />}
+                // prefix={saving ? <LoadingOutlined /> : <CheckOutlined style={{ opacity: 0 }} />}
                 onChange={(e) => {
                   setDefaultValue(e.target.value);
                   setChanged(true);

@@ -1,16 +1,45 @@
-import React from 'react';
-import {Checkbox, Col, Divider, Input, Row, Table, Select} from 'antd';
+import React, {useState} from 'react';
+import {Checkbox, Col, Divider, Input, Row, Table, Select, Button} from 'antd';
 import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
 import {ColumnsType} from 'antd/lib/table/interface';
 import {AjaxInput} from '../components/AjaxInput';
+import {PauseOutlined, PlayCircleFilled} from '@ant-design/icons';
+import {Simulate} from 'react-dom/test-utils';
+import play = Simulate.play;
+
+function PlayBtn({gameId = 1, fileName}: any) {
+  // http://gamesound.serabass.net/sounds/1/180.wav
+  let [playing, setPlaying] = useState(false);
+  let icon = !playing ? <PlayCircleFilled /> : <PauseOutlined />;
+  return <Button icon={icon}
+                 type="text"
+                 onClick={() => {
+                   setPlaying(true);
+                    let audio = new Audio();
+                    audio.src = `http://gamesound.serabass.net/sounds/${gameId}/${fileName}`;
+                    audio.onended = () => {
+                      setPlaying(false);
+                    };
+                    audio.play();
+                 }} />;
+}
 
 interface SoundEntry {
   id: number;
+  fileName: string;
 }
 
 let columns: ColumnsType<SoundEntry> = [
+  {
+    title: '',
+    key: 'player',
+    dataIndex: 'player',
+    render(_, el) {
+      return <PlayBtn gameId={1} fileName={el.fileName} />
+    }
+  },
   {
     title: "#",
     key: 'id',
@@ -148,7 +177,8 @@ export default function Index({
                                      page
                                    });
                                  }
-                               }} />
+                               }}
+            />
           </Col>
         </Row>
       </Col>
