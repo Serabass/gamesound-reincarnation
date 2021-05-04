@@ -6,11 +6,11 @@ import {
   LoadingOutlined,
 } from '@ant-design/icons';
 
-export interface AjaxInputProps extends InputProps {
-  data: any;
+export interface AjaxInputProps<D> extends InputProps {
+  data: D;
 }
 
-export function AjaxInput({...props}: AjaxInputProps) {
+export function AjaxInput<D>({...props}: AjaxInputProps<D>) {
   let [defaultValue, setDefaultValue] = useState(props.defaultValue);
   let [saving, setSaving] = useState(false);
   let [changed, setChanged] = useState(false);

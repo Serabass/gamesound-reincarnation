@@ -21,9 +21,12 @@ let columns: ColumnsType<SoundEntry> = [
     key: 'originalText',
     dataIndex: 'originalText',
     render(value, entry) {
-      return <AjaxInput defaultValue={value} bordered={false} data={{
-        id: entry.id
-      }} />
+      return <AjaxInput<{ id: number }>
+        defaultValue={value}
+        bordered={false} data={{
+          id: entry.id
+        }}
+      />
     }
   },
   {
