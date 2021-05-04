@@ -1,6 +1,7 @@
 import React from 'react';
-import { Table } from 'antd';
+import {Col, Input, Row, Table} from 'antd';
 import AppLayout from "../Layout";
+import {Inertia} from '@inertiajs/inertia'
 
 let columns = [
   {
@@ -37,10 +38,36 @@ let columns = [
 
 interface IndexProps {
   sounds: any;
+  page: number;
 }
 
-export default function Index({sounds}: IndexProps) {
+export default function Index({sounds, page}: IndexProps) {
   return <AppLayout title="Home page">
-    <Table dataSource={sounds.data} columns={columns} />
+    <Row>
+      <Col md={24}>
+        <Row>
+          <Col md={24}>
+            <Input.Search />
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={24}>
+
+            <Table dataSource={sounds.data} columns={columns} pagination={{
+              position: ['topCenter'],
+              pageSize: 10,
+              total: sounds.total,
+              current: page,
+              onChange(page) {
+                Inertia.get((window as any).route('home'), {
+                  page
+                });
+              }
+            }} />
+          </Col>
+        </Row>
+      </Col>
+    </Row>
   </AppLayout>;
 }
