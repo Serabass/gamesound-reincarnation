@@ -4,6 +4,7 @@ import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
 import {ColumnsType} from 'antd/lib/table/interface';
+import {AjaxInput} from '../components/AjaxInput';
 
 interface SoundEntry {
 
@@ -19,6 +20,9 @@ let columns: ColumnsType<SoundEntry> = [
     title: "Original Text",
     key: 'originalText',
     dataIndex: 'originalText',
+    render(value) {
+      return <AjaxInput defaultValue={value} bordered={false} />
+    }
   },
   {
     title: "Translation",
