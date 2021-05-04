@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-import {Input} from 'antd';
-import {InputProps} from 'antd/lib/input/Input';
-import {
-  CheckOutlined,
-  LoadingOutlined,
-} from '@ant-design/icons';
+import {Input,  Spin} from 'antd';
 import {TextAreaProps} from 'antd/lib/input/TextArea';
 
 export interface AjaxInputProps<D> extends TextAreaProps {
@@ -21,21 +16,22 @@ export function AjaxInput<D>({...props}: AjaxInputProps<D>) {
     setTimeout(() => {
       setSaving(false);
       setChanged(false);
-    }, 2000);
+    }, 1000);
   }
 
-  return <Input.TextArea {...props}
-                defaultValue={defaultValue}
-                // prefix={saving ? <LoadingOutlined /> : <CheckOutlined style={{ opacity: 0 }} />}
-                onChange={(e) => {
-                  setDefaultValue(e.target.value);
-                  setChanged(true);
-                }}
-                onBlur={() => {
-                  if (!changed) {
-                    return;
-                  }
-                  save();
-                }}
-  />
+  return <Spin spinning={saving}>
+    <Input.TextArea {...props}
+                    disabled={saving}
+                    defaultValue={defaultValue}
+                    onChange={(e) => {
+                      setDefaultValue(e.target.value);
+                      setChanged(true);
+                    }}
+                    onBlur={() => {
+                      if (!changed) {
+                        return;
+                      }
+                      save();
+                    }}
+    /></Spin>
 }
