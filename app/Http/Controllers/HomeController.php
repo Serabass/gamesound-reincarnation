@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Correction;
 use App\Models\Sound;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,6 +12,7 @@ class HomeController extends Controller {
     $pageSize = 100;
     $page = $request->input('page');
     $query = $request->input('query', '');
+    $groupName = $request->input('groupName', '');
     $onlyEmpty = $request->input('onlyEmpty', 0);
     $sounds = Sound::whereIsSpeech(true)
       ->where('originalText', 'LIKE', '%' . $query . '%');
@@ -22,14 +24,30 @@ class HomeController extends Controller {
       $sounds = $sounds->where('originalText', '=', '');
     }
 
+    if (! empty($groupName)) {
+      $sounds = $sounds->where('groupName', 'LIKE', '%' . $groupName . '%');
+    }
+
     return Inertia::render('Pages/Index', [
       'sounds'     => $sounds->paginate($pageSize),
       'page'       => $page,
       'query'      => $query,
       'onlyEmpty'  => $onlyEmpty,
       'pageSize'   => $pageSize,
+      'groupName'  => $groupName,
       'groupNames' => $groupNames,
       'langs'      => $langs,
     ]);
+  }
+
+  public function saveCorrection(Request $request) {
+    $id = $request->get('id');
+    $originalText = $request->get('originalText');
+    $cor = new Correction();
+    $cor->originalText = $originalText;
+    $cor->translation = '';
+    $cor->gameId = 1;
+    $cor->soundId = $id;
+    $cor->save();
   }
 }

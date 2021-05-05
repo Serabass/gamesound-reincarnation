@@ -6,6 +6,7 @@ import {debounce} from 'lodash';
 import {ColumnsType} from 'antd/lib/table/interface';
 import {AjaxInput} from '../components/AjaxInput';
 import {PauseOutlined, CaretRightOutlined} from '@ant-design/icons';
+import {InertiaLink} from '@inertiajs/inertia-react';
 
 function PlayBtn({gameId = 1, fileName}: any) {
   // http://gamesound.serabass.net/sounds/1/180.wav
@@ -131,14 +132,15 @@ export default function Index({
               style={{width: '100%'}}
               placeholder="Select a person"
               optionFilterProp="children"
+              defaultValue={groupName}
               filterOption={(input, option) =>
                 `${option?.value}`.toLowerCase().indexOf(`${input}`.toLowerCase()) >= 0
               }
-              onChange={debounce((e) => {
+              onChange={((e) => {
                 search({
                   groupName: e
                 });
-              }, 1000)}
+              })}
             >
               {groupNames.map((name, index) => <Select.Option value={name} key={index}>{name}</Select.Option>)}
             </Select>,

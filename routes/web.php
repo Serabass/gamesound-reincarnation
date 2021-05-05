@@ -17,3 +17,5 @@ Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('h
 Route::get('/about', [\App\Http\Controllers\HomeController::class, 'about'])->name('about');
 Route::get('/accounts', [\App\Http\Controllers\HomeController::class, 'accounts'])->name('accounts');
 Route::get('/sandbox', [\App\Http\Controllers\SandboxController::class, 'index'])->name('sandbox');
+
+Route::post('/save-cor', [\App\Http\Controllers\HomeController::class, 'saveCorrection'])->name('save-correction');
