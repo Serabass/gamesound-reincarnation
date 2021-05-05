@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Sound whereTranslationAccepted($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Sound whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $is_speech
  */
 class Sound extends Model {
 }
