@@ -28,8 +28,13 @@ class HomeController extends Controller {
       $sounds = $sounds->where('groupName', 'LIKE', '%' . $groupName . '%');
     }
 
+    $stats = [
+      'doubtful' => Sound::where('originalText', 'LIKE', '%(?)%')->count()
+    ];
+
     return Inertia::render('Pages/Index', [
       'sounds'     => $sounds->paginate($pageSize),
+      'stats'     => $stats,
       'page'       => $page,
       'query'      => $query,
       'onlyEmpty'  => $onlyEmpty,

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import axios from 'axios';
+import { Inertia } from '@inertiajs/inertia'
 import {Col, Input, Row, Spin} from 'antd';
 import {TextAreaProps} from 'antd/lib/input/TextArea';
 import {EditOutlined} from '@ant-design/icons';
@@ -15,7 +15,7 @@ export function AjaxInput<D>({...props}: AjaxInputProps<D>) {
 
   function save() {
     setSaving(true);
-    axios.post(route('save-correction'), {
+    Inertia.post(route('save-correction'), {
       ...props.data,
       originalText
     }).then((res) => {

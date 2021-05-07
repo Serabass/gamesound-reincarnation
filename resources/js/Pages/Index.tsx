@@ -4,9 +4,10 @@ import AppLayout from "../Layout";
 import {Inertia} from '@inertiajs/inertia'
 import {debounce} from 'lodash';
 import {ColumnsType} from 'antd/lib/table/interface';
-import {AjaxInput} from '../components/AjaxInput';
+import {AjaxInput, AjaxInputProps} from '../components/AjaxInput';
 import {PauseOutlined, CaretRightOutlined} from '@ant-design/icons';
-import {InertiaLink} from '@inertiajs/inertia-react';
+import {InputProps} from 'antd/lib/input/Input';
+import {useLocalstorageState} from 'rooks';
 
 function PlayBtn({gameId = 1, fileName}: any) {
   // http://gamesound.serabass.net/sounds/1/180.wav
@@ -16,12 +17,12 @@ function PlayBtn({gameId = 1, fileName}: any) {
                  type="text"
                  onClick={() => {
                    setPlaying(true);
-                    let audio = new Audio();
-                    audio.src = `http://gamesound.serabass.net/sounds/${gameId}/${fileName}`;
-                    audio.onended = () => {
-                      setPlaying(false);
-                    };
-                    audio.play();
+                   let audio = new Audio();
+                   audio.src = `http://gamesound.serabass.net/sounds/${gameId}/${fileName}`;
+                   audio.onended = () => {
+                     setPlaying(false);
+                   };
+                   audio.play();
                  }} />;
 }
 
@@ -47,7 +48,8 @@ let columns: ColumnsType<SoundEntry> = [
     key: 'originalText',
     dataIndex: 'originalText',
     render(value, entry) {
-      return <AjaxInput<{ id: number }>
+      return <SizedInput<{ id: number }>
+        storageId={entry.id}
         defaultValue={value}
         data={{
           id: entry.id
@@ -82,24 +84,43 @@ interface SoundsResponse {
   data: SoundEntry[];
 }
 
+interface SoundsStats {
+  doubtful: number;
+}
+
 interface IndexProps {
   sounds: SoundsResponse;
+  stats: SoundsStats;
   page: number;
   pageSize: number;
   query?: string;
   onlyEmpty: number;
   groupNames: string[];
   groupName?: string;
+  langs: string[];
+}
+
+interface SizedInputProps<D> extends AjaxInputProps<D> {
+  storageId: string | number;
+}
+
+function SizedInput<D>(props: SizedInputProps<D>) {
+  let [height, setHeight] = useLocalstorageState(`ajaxInputSize:${props.storageId}`, 60);
+  return <AjaxInput<D> {...props} style={{height}} onResize={({height}) => {
+    setHeight(height);
+  }}/>;
 }
 
 export default function Index({
                                 sounds,
+                                stats,
                                 page = 1,
                                 pageSize,
                                 query = '',
                                 onlyEmpty = 0,
                                 groupNames,
-                                groupName = ''
+                                groupName = '',
+                                langs,
                               }: IndexProps) {
   function search(data: any = {}) {
     Inertia.get(route('home'), {
@@ -130,7 +151,7 @@ export default function Index({
             <Select
               showSearch
               style={{width: '100%'}}
-              placeholder="Select a person"
+              placeholder={`Groups (${groupNames.length})`}
               optionFilterProp="children"
               defaultValue={groupName}
               filterOption={(input, option) =>
@@ -162,9 +183,20 @@ export default function Index({
 
         <Row>
           <Col md={24}>
-            Total: <b>{sounds.total}</b>
+            <Row>
+              <Col md={4}>
+                Total: <b>{sounds.total}</b>
+              </Col>
+              <Col md={4}>
+                Doubtful: <b>{stats.doubtful}</b>
+              </Col>
+              <Col md={4}>
+                Langs: <b>{langs.join(', ')}</b>
+              </Col>
+            </Row>
             <Table<SoundEntry> dataSource={sounds.data}
                                columns={columns}
+                               rowKey="id"
                                pagination={{
                                  position: ['topCenter', 'bottomCenter'],
                                  pageSize,
