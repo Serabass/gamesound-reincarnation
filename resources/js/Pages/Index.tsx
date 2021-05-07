@@ -1,29 +1,41 @@
-import React, {useState} from 'react';
-import {Checkbox, Col, Divider, Input, Row, Table, Select, Button} from 'antd';
+import React, { useState } from "react";
+import {
+  Checkbox,
+  Col,
+  Divider,
+  Input,
+  Row,
+  Table,
+  Select,
+  Button
+} from "antd";
 import AppLayout from "../Layout";
-import {Inertia} from '@inertiajs/inertia'
-import {debounce} from 'lodash';
-import {ColumnsType} from 'antd/lib/table/interface';
-import {AjaxInput, AjaxInputProps} from '../components/AjaxInput';
-import {PauseOutlined, CaretRightOutlined} from '@ant-design/icons';
-import {InputProps} from 'antd/lib/input/Input';
-import {useLocalstorageState} from 'rooks';
+import { Inertia } from "@inertiajs/inertia";
+import { debounce } from "lodash";
+import { ColumnsType } from "antd/lib/table/interface";
+import { AjaxInput, AjaxInputProps } from "../components/AjaxInput";
+import { PauseOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { useLocalstorageState } from "rooks";
 
-function PlayBtn({gameId = 1, fileName}: any) {
+function PlayBtn({ gameId = 1, fileName }: any) {
   // http://gamesound.serabass.net/sounds/1/180.wav
   let [playing, setPlaying] = useState(false);
   let icon = !playing ? <CaretRightOutlined /> : <PauseOutlined />;
-  return <Button icon={icon}
-                 type="text"
-                 onClick={() => {
-                   setPlaying(true);
-                   let audio = new Audio();
-                   audio.src = `http://gamesound.serabass.net/sounds/${gameId}/${fileName}`;
-                   audio.onended = () => {
-                     setPlaying(false);
-                   };
-                   audio.play();
-                 }} />;
+  return (
+    <Button
+      icon={icon}
+      type="text"
+      onClick={() => {
+        setPlaying(true);
+        let audio = new Audio();
+        audio.src = `http://gamesound.serabass.net/sounds/${gameId}/${fileName}`;
+        audio.onended = () => {
+          setPlaying(false);
+        };
+        audio.play();
+      }}
+    />
+  );
 }
 
 interface SoundEntry {
@@ -58,26 +70,35 @@ interface SizedInputProps<D> extends AjaxInputProps<D> {
 }
 
 function SizedInput<D>(props: SizedInputProps<D>) {
-  let [height, setHeight] = useLocalstorageState(`ajaxInputSize:${props.storageId}`, 60);
-  return <AjaxInput<D> {...props} style={{height}} onResize={({height}) => {
-    setHeight(height);
-  }} />;
+  let [height, setHeight] = useLocalstorageState(
+    `ajaxInputSize:${props.storageId}`,
+    60
+  );
+  return (
+    <AjaxInput<D>
+      {...props}
+      style={{ height }}
+      onResize={({ height }) => {
+        setHeight(height);
+      }}
+    />
+  );
 }
 
 export default function Index({
-                                sounds,
-                                stats,
-                                page = 1,
-                                pageSize,
-                                query = '',
-                                onlyEmpty = 0,
-                                groupNames,
-                                groupName = '',
-                                langs,
-                                langFilters,
-                              }: IndexProps) {
+  sounds,
+  stats,
+  page = 1,
+  pageSize,
+  query = "",
+  onlyEmpty = 0,
+  groupNames,
+  groupName = "",
+  langs,
+  langFilters
+}: IndexProps) {
   function search(data: any = {}) {
-    Inertia.get(route('home'), {
+    Inertia.get(route("home"), {
       page,
       query,
       onlyEmpty,
@@ -88,140 +109,156 @@ export default function Index({
 
   let columns: ColumnsType<SoundEntry> = [
     {
-      title: '',
-      key: 'player',
-      dataIndex: 'player',
-      render: (_, el) => <PlayBtn gameId={1} fileName={el.fileName} />
+      title: "",
+      key: "player",
+      dataIndex: "player",
+      render(_, el) {
+        return <PlayBtn gameId={1} fileName={el.fileName} />;
+      }
     },
     {
       title: "#",
-      key: 'id',
-      dataIndex: 'id',
+      key: "id",
+      dataIndex: "id"
     },
     {
       title: "Original Text",
-      key: 'originalText',
-      dataIndex: 'originalText',
+      key: "originalText",
+      dataIndex: "originalText",
       render(value, entry) {
-        return <SizedInput<{ id: number }>
-          storageId={entry.id}
-          defaultValue={value}
-          data={{
-            id: entry.id
-          }}
-        />
+        return (
+          <SizedInput<{ id: number }>
+            storageId={entry.id}
+            defaultValue={value}
+            data={{
+              id: entry.id
+            }}
+          />
+        );
       }
     },
     {
       title: "Translation",
-      key: 'translation',
-      dataIndex: 'translation',
+      key: "translation",
+      dataIndex: "translation"
     },
     {
       title: "Lang",
-      key: 'lang',
-      dataIndex: 'lang',
+      key: "lang",
+      dataIndex: "lang",
       filteredValue: langFilters,
-      filters: langs.map(lang => ({
+      filters: langs.map((lang) => ({
         text: lang,
         value: lang
-      })),
+      }))
     },
     {
       title: "Group Name",
-      key: 'groupName',
-      dataIndex: 'groupName',
+      key: "groupName",
+      dataIndex: "groupName"
     },
     {
       title: "Gender",
-      key: 'gender',
-      dataIndex: 'gender',
-    },
+      key: "gender",
+      dataIndex: "gender"
+    }
   ];
 
-  return <AppLayout title="Home page">
-    <Row>
-      <Col md={24}>
-        <Row>
-          <Col md={12}>
-            <Input autoFocus
-                   allowClear
-                   defaultValue={query}
-                   onChange={debounce((e) => {
-                     search({
-                       query: e.target.value,
-                     });
-                   }, 1000)}
-            />
-          </Col>
-          <Col md={6}>
-            <Select
-              showSearch
-              style={{width: '100%'}}
-              placeholder={`Groups (${groupNames.length})`}
-              optionFilterProp="children"
-              defaultValue={groupName}
-              filterOption={(input, option) =>
-                `${option?.value}`.toLowerCase().indexOf(`${input}`.toLowerCase()) >= 0
-              }
-              onChange={((e) => {
-                search({
-                  groupName: e
-                });
-              })}
-            >
-              {groupNames.map((name, index) => <Select.Option value={name} key={index}>{name}</Select.Option>)}
-            </Select>,
-          </Col>
-          <Col md={6}>
-            <Checkbox
-              defaultChecked={onlyEmpty == 1}
-              onChange={debounce((e) => {
-                search({
-                  onlyEmpty: +e.target.checked,
-                });
-              }, 200)}>
-              Show only empty entries
-            </Checkbox>
-          </Col>
-        </Row>
+  return (
+    <AppLayout title="Home page">
+      <Row>
+        <Col md={24}>
+          <Row>
+            <Col md={12}>
+              <Input
+                autoFocus
+                allowClear
+                defaultValue={query}
+                onChange={debounce((e) => {
+                  search({
+                    query: e.target.value
+                  });
+                }, 1000)}
+              />
+            </Col>
+            <Col md={6}>
+              <Select
+                showSearch
+                style={{ width: "100%" }}
+                placeholder={`Groups (${groupNames.length})`}
+                optionFilterProp="children"
+                defaultValue={groupName}
+                filterOption={(input, option) =>
+                  `${option?.value}`
+                    .toLowerCase()
+                    .indexOf(`${input}`.toLowerCase()) >= 0
+                }
+                onChange={(e) => {
+                  search({
+                    groupName: e
+                  });
+                }}
+              >
+                {groupNames.map((name, index) => (
+                  <Select.Option value={name} key={index}>
+                    {name}
+                  </Select.Option>
+                ))}
+              </Select>
+              ,
+            </Col>
+            <Col md={6}>
+              <Checkbox
+                defaultChecked={onlyEmpty == 1}
+                onChange={debounce((e) => {
+                  search({
+                    onlyEmpty: +e.target.checked
+                  });
+                }, 200)}
+              >
+                Show only empty entries
+              </Checkbox>
+            </Col>
+          </Row>
 
-        <Divider />
+          <Divider />
 
-        <Row>
-          <Col md={24}>
-            <Row>
-              <Col md={4}>
-                Total: <b>{sounds.total}</b>
-              </Col>
-              <Col md={4}>
-                Doubtful: <b>{stats.doubtful}</b>
-              </Col>
-              <Col md={4}>
-                Langs: <b>{langs.join(', ')}</b>
-              </Col>
-            </Row>
-            <Table<SoundEntry> dataSource={sounds.data}
-                               columns={columns}
-                               rowKey="id"
-                               pagination={{
-                                 position: ['topCenter', 'bottomCenter'],
-                                 pageSize,
-                                 total: sounds.total,
-                                 defaultCurrent: page,
-                               }}
-                               onChange={(pagination, filters, sort) => {
-                                 search({
-                                   page: pagination.current,
-                                   pageSize: pagination.pageSize,
-                                   filters,
-                                   sort
-                                 })
-                               }}
-            />
-          </Col>
-        </Row>
-      </Col>
-    </Row>
-  </AppLayout>;
+          <Row>
+            <Col md={24}>
+              <Row>
+                <Col md={4}>
+                  Total: <b>{sounds.total}</b>
+                </Col>
+                <Col md={4}>
+                  Doubtful: <b>{stats.doubtful}</b>
+                </Col>
+                <Col md={4}>
+                  Langs: <b>{langs.join(", ")}</b>
+                </Col>
+              </Row>
+              <Table<SoundEntry>
+                dataSource={sounds.data}
+                columns={columns}
+                rowKey="id"
+                pagination={{
+                  position: ["topCenter", "bottomCenter"],
+                  pageSize,
+                  total: sounds.total,
+                  defaultCurrent: page
+                }}
+                onChange={(pagination, filters, sort) => {
+                  search({
+                    page: pagination.current,
+                    pageSize: pagination.pageSize,
+                    filters,
+                    sort
+                  });
+                }}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </AppLayout>
+  );
 }
