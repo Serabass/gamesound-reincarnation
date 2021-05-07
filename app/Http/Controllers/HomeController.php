@@ -11,6 +11,10 @@ class HomeController extends Controller {
   public function index(Request $request) {
     $pageSize = 100;
     $page = $request->input('page');
+    $filters = $request->input('filters');
+
+    $langFilters = \Arr::wrap($filters['lang']);
+
     $query = $request->input('query', '');
     $groupName = $request->input('groupName', '');
     $onlyEmpty = $request->input('onlyEmpty', 0);
@@ -28,20 +32,25 @@ class HomeController extends Controller {
       $sounds = $sounds->where('groupName', 'LIKE', '%' . $groupName . '%');
     }
 
+    if (! empty($langFilters)) {
+      $sounds = $sounds->whereIn('lang', $langFilters);
+    }
+
     $stats = [
       'doubtful' => Sound::where('originalText', 'LIKE', '%(?)%')->count()
     ];
 
     return Inertia::render('Pages/Index', [
-      'sounds'     => $sounds->paginate($pageSize),
-      'stats'     => $stats,
-      'page'       => $page,
-      'query'      => $query,
-      'onlyEmpty'  => $onlyEmpty,
-      'pageSize'   => $pageSize,
-      'groupName'  => $groupName,
-      'groupNames' => $groupNames,
-      'langs'      => $langs,
+      'sounds'      => $sounds->paginate($pageSize),
+      'stats'       => $stats,
+      'page'        => $page,
+      'query'       => $query,
+      'onlyEmpty'   => $onlyEmpty,
+      'pageSize'    => $pageSize,
+      'groupName'   => $groupName,
+      'groupNames'  => $groupNames,
+      'langs'       => $langs,
+      'langFilters' => $langFilters,
     ]);
   }
 

@@ -31,54 +31,6 @@ interface SoundEntry {
   fileName: string;
 }
 
-let columns: ColumnsType<SoundEntry> = [
-  {
-    title: '',
-    key: 'player',
-    dataIndex: 'player',
-    render: (_, el) => <PlayBtn gameId={1} fileName={el.fileName} />
-  },
-  {
-    title: "#",
-    key: 'id',
-    dataIndex: 'id',
-  },
-  {
-    title: "Original Text",
-    key: 'originalText',
-    dataIndex: 'originalText',
-    render(value, entry) {
-      return <SizedInput<{ id: number }>
-        storageId={entry.id}
-        defaultValue={value}
-        data={{
-          id: entry.id
-        }}
-      />
-    }
-  },
-  {
-    title: "Translation",
-    key: 'translation',
-    dataIndex: 'translation',
-  },
-  {
-    title: "Lang",
-    key: 'lang',
-    dataIndex: 'lang',
-  },
-  {
-    title: "Group Name",
-    key: 'groupName',
-    dataIndex: 'groupName',
-  },
-  {
-    title: "Gender",
-    key: 'gender',
-    dataIndex: 'gender',
-  },
-];
-
 interface SoundsResponse {
   total: number;
   data: SoundEntry[];
@@ -98,6 +50,7 @@ interface IndexProps {
   groupNames: string[];
   groupName?: string;
   langs: string[];
+  langFilters: string[];
 }
 
 interface SizedInputProps<D> extends AjaxInputProps<D> {
@@ -108,7 +61,7 @@ function SizedInput<D>(props: SizedInputProps<D>) {
   let [height, setHeight] = useLocalstorageState(`ajaxInputSize:${props.storageId}`, 60);
   return <AjaxInput<D> {...props} style={{height}} onResize={({height}) => {
     setHeight(height);
-  }}/>;
+  }} />;
 }
 
 export default function Index({
@@ -121,6 +74,7 @@ export default function Index({
                                 groupNames,
                                 groupName = '',
                                 langs,
+                                langFilters,
                               }: IndexProps) {
   function search(data: any = {}) {
     Inertia.get(route('home'), {
@@ -131,6 +85,59 @@ export default function Index({
       ...data
     });
   }
+
+  let columns: ColumnsType<SoundEntry> = [
+    {
+      title: '',
+      key: 'player',
+      dataIndex: 'player',
+      render: (_, el) => <PlayBtn gameId={1} fileName={el.fileName} />
+    },
+    {
+      title: "#",
+      key: 'id',
+      dataIndex: 'id',
+    },
+    {
+      title: "Original Text",
+      key: 'originalText',
+      dataIndex: 'originalText',
+      render(value, entry) {
+        return <SizedInput<{ id: number }>
+          storageId={entry.id}
+          defaultValue={value}
+          data={{
+            id: entry.id
+          }}
+        />
+      }
+    },
+    {
+      title: "Translation",
+      key: 'translation',
+      dataIndex: 'translation',
+    },
+    {
+      title: "Lang",
+      key: 'lang',
+      dataIndex: 'lang',
+      filteredValue: langFilters,
+      filters: langs.map(lang => ({
+        text: lang,
+        value: lang
+      })),
+    },
+    {
+      title: "Group Name",
+      key: 'groupName',
+      dataIndex: 'groupName',
+    },
+    {
+      title: "Gender",
+      key: 'gender',
+      dataIndex: 'gender',
+    },
+  ];
 
   return <AppLayout title="Home page">
     <Row>
@@ -202,11 +209,14 @@ export default function Index({
                                  pageSize,
                                  total: sounds.total,
                                  defaultCurrent: page,
-                                 onChange(page) {
-                                   search({
-                                     page
-                                   });
-                                 }
+                               }}
+                               onChange={(pagination, filters, sort) => {
+                                 search({
+                                   page: pagination.current,
+                                   pageSize: pagination.pageSize,
+                                   filters,
+                                   sort
+                                 })
                                }}
             />
           </Col>
